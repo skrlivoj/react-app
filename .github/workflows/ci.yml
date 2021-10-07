@@ -1,37 +1,37 @@
 name: CI
 
 on:
-    pull_request:
-        branches: [develop]
-    push:
-        branches: [develop]
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: (0) Checkout code
-              uses: actions/checkout@v2
-            - name: (0) Use NodeJS
-              uses: actions/setup-node@v1
-              with:
-                  version: "12.x"
-            - name: (1) Install dependencies
-              run: npm ci
-            - name: (2) Check code formatting
-              run: npm run format:check
-            - name: (3) Run automated tests
-              run: npm run test -- --coverage
-              env:
-                  CI: true
-            # - name: (4) Upload code coverage as an artifact
-            #   run:
-            - name: (5) Build project
-              if: github.event_name == 'push'
-              run: npm run build
-            - name: (7) Deploy to staging server
-              if: github.event_name == 'push'
-              run: npx surge --project ./build --domain spotted-pancake.surge.sh
-              env:
-                SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
-                SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: (0) Checkout code
+        uses: actions/checkout@v2
+      - name: (0) Use NodeJS
+        uses: actions/setup-node@v1
+        with:
+          version: "12.x"
+      - name: (1) Install dependencies
+        run: npm ci
+      - name: (2) Check code formatting
+        run: npm run format:check
+      - name: (3) Run automated tests
+        run: npm run test -- --coverage
+        env:
+          CI: true
+      # - name: (4) Upload code coverage as an artifact
+      #   run:
+      - name: (5) Build project
+        if: github.event_name == 'push'
+        run: npm run build
+      - name: (7) Deploy to staging server
+        if: github.event_name == 'push'
+        run: npx surge --project ./build --domain spotted-pancake.surge.sh
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
