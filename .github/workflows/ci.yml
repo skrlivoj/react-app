@@ -12,6 +12,13 @@ jobs:
     steps:
       - name: (0) Checkout code
         uses: actions/checkout@v2
+      - name: (0) Cache node_modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashfiles('**/package-lock.json')}}
+          restore-key: |
+            ${{ runner.os }}-node-
       - name: (0) Use NodeJS
         uses: actions/setup-node@v1
         with:
