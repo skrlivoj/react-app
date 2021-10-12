@@ -22,7 +22,7 @@ jobs:
       - name: (0) Use NodeJS
         uses: actions/setup-node@v1
         with:
-          version: "12.x"
+          version: "15.x"
       - name: (1) Install dependencies
         run: npm ci
       - name: (2) Check code formatting
