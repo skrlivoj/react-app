@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, master]
   push:
-    branches: [develop]
+    branches: [develop, master]
 
 jobs:
   build:
@@ -45,9 +45,20 @@ jobs:
         with:
           name: build
           path: build
-      - name: (7) Deploy to staging server
-        if: github.event_name == 'push'
+      - name: (7) Create a release
+        if: github.event_name == 'push' && github.ref == "refs/heads/master"
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITUB_TOKEN }}
+      - name: (8a) Deploy to staging server
+        if: github.event_name == 'push' && github.ref == "refs/heads/develop"
         run: npx surge --project ./build --domain spotted-pancake.surge.sh
         env:
           SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      - name: (8b) Deploy to production server
+        if: github.event_name == 'push' && github.ref == "refs/heads/master"
+        run: npx surge --project ./build --domain spotted-pancake.surge.sh
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}          
