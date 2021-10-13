@@ -67,3 +67,15 @@ jobs:
         env:
           SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+      - name: (9) Open issue on failure
+        if: failure() && github.event_name == 'pull_request'
+        run: |
+          curl -X POST \
+          --url https://api.github.com/repos/${{ github.repository }}/issues \
+          -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'content-type: application/json' \
+          --data '{
+          "title": "Automated issue for commit: ${{ github.sha }}",
+          "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**.\n\nThe commit hash was: _${{ github.sha }}_.",
+          "assignees": ["${{ github.event.pull_request.user.login }}"]
+          }'
